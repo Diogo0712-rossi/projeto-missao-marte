@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>ECLSS - Painel de Controle Marte</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; }
+        .card { background: #1e293b; padding: 1.5rem; border-radius: 8px; max-width: 480px; }
+        input, button { padding: 0.5rem; margin-top: 0.5rem; width: 100%; box-sizing: border-box; }
+        button { background: #ea580c; color: white; border: none; cursor: pointer; font-weight: bold; }
+        #mensagem-status { margin-top: 1rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Habitat Marte - ECLSS</h1>
+        <p>Oxigênio Disponível: <span id="nivel-oxigenio">100.0</span> kg</p>
+        <p>Status do Sistema: <span id="status-sistema">NORMAL</span></p>
+
+        <form id="form-oxigenio">
+            <label for="input-cota">Solicitar Cota Extra de O2 (kg):</label>
+            <input type="number" id="input-cota" step="0.1" required placeholder="Ex: 15.0">
+            <button type="submit" id="btn-solicitar">Solicitar Cota</button>
+        </form>
+        <div id="mensagem-status"></div>
+    </div>
+
+    <script>
+        let estoqueO2 = 100.0;
+        const form = document.getElementById('form-oxigenio');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const valor = parseFloat(document.getElementById('input-cota').value);
+            const msgEl = document.getElementById('mensagem-status');
+            const nivelEl = document.getElementById('nivel-oxigenio');
+            const statusEl = document.getElementById('status-sistema');
+
+            setTimeout(() => {
+                if (isNaN(valor) || valor <= 0) {
+                    msgEl.textContent = "Erro: Valor inválido.";
+                    msgEl.style.color = "#f87171";
+                    return;
+                }
+                if (estoqueO2 - valor < 10.0) {
+                    msgEl.textContent = "Erro: Reserva mínima de segurança atingida.";
+                    msgEl.style.color = "#f87171";
+                    statusEl.textContent = "ALERTA";
+                    return;
+                }
+                estoqueO2 = +(estoqueO2 - valor).toFixed(2);
+                nivelEl.textContent = estoqueO2.toFixed(1);
+                msgEl.textContent = "Solicitação aprovada com sucesso!";
+                msgEl.style.color = "#4ade80";
+            }, 150);
+        });
+    </script>
+</body>
+</html>
